@@ -1,9 +1,10 @@
+language: generic
 sudo: required
 services:
   - docker
 
 before_install:
-  - docker build -t truebot/rect-test -f ./client/Dockerfile.dev ./client
+  - docker build -t truebot/react-test -f ./client/Dockerfile.dev ./client
 
 script:
   - docker run -e CI=true truebot/react-test npm test
