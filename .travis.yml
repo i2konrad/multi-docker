@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t truebot/rect-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true truebot/react-test npm test
+
+after_success:
+  - docker build -t truebot/multi-client ./client
+  - docker build -t truebot/multi-nginx ./nginx
+  - docker build -t truebot/multi-server ./server
+  - docker build -t truebot/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and send them to docker hub
+  - docker push truebot/multi-client
+  - docker push truebot/multi-nginx
+  - docker push truebot/multi-server
+  - docker push truebot/multi-worker
